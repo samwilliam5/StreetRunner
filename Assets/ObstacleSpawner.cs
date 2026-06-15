@@ -3,7 +3,6 @@ using UnityEngine;
 public class ObstacleSpawner : MonoBehaviour
 {
     // obstaclePrefab = the Obstacle template we saved
-    // We will drag our Prefab into this slot in Unity
     public GameObject obstaclePrefab;
 
     // spawnTime = how many seconds between each obstacle spawn
@@ -16,7 +15,6 @@ public class ObstacleSpawner : MonoBehaviour
     void Update()
     {
         // Add time every frame
-        // Time.deltaTime = time since last frame
         timer += Time.deltaTime;
 
         // If timer reaches spawnTime → spawn obstacle
@@ -37,11 +35,30 @@ public class ObstacleSpawner : MonoBehaviour
     // SpawnObstacle() = creates a new obstacle in the scene
     void SpawnObstacle()
     {
-        // Instantiate = create a copy of the prefab in the scene
-        // obstaclePrefab = the template to copy
-        // spawnPosition = where to spawn it (right side of screen)
-        // Quaternion.identity = no rotation
         Vector3 spawnPosition = new Vector3(10f, -3f, 0f);
-        Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+        GameObject obstacle = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+
+        // Set red color immediately after spawning
+        SpriteRenderer sr = obstacle.GetComponentInChildren<SpriteRenderer>();
+
+        sr.color = new Color(1f, 0.2f, 0.2f, 1f);
+
+        int sizeType = Random.Range(1, 4);
+
+        if (sizeType == 1)
+        {
+            obstacle.transform.localScale = new Vector3(1f, 0.5f, 1f);
+            obstacle.transform.position = new Vector3(10f, -3.5f, 0f);
+        }
+        else if (sizeType == 2)
+        {
+            obstacle.transform.localScale = new Vector3(1f, 1f, 1f);
+            obstacle.transform.position = new Vector3(10f, -3f, 0f);
+        }
+        else if (sizeType == 3)
+        {
+            obstacle.transform.localScale = new Vector3(1f, 2f, 1f);
+            obstacle.transform.position = new Vector3(10f, -2.5f, 0f);
+        }
     }
 }

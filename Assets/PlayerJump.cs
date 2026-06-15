@@ -6,8 +6,13 @@ public class PlayerJump : MonoBehaviour
     // jumpForce = how high the player jumps
     public float jumpForce = 10f;
 
-    // isGrounded = is the player standing on the ground?
-    private bool isGrounded = true;
+    // maxJumps = how many times player can jump
+    // 2 = double jump allowed!
+    private int maxJumps = 2;
+
+    // jumpsRemaining = how many jumps player has left
+    // starts at 2, goes down each jump, resets when landing
+    private int jumpsRemaining = 2;
 
     // rb = stores the Rigidbody2D component of the player
     private Rigidbody2D rb;
@@ -28,41 +33,43 @@ public class PlayerJump : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         // Get the AudioSource component
-        // AudioSource = the speaker attached to Player
         audioSource = GetComponent<AudioSource>();
     }
 
     // Update() = runs every frame
     void Update()
     {
-        // If Space bar pressed AND player is on ground
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
+        // If Space bar pressed AND player has jumps remaining
+        if (Keyboard.current.spaceKey.wasPressedThisFrame && jumpsRemaining > 0)
         {
             // Push player upward
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
             // Play jump sound
-            // PlayOneShot = plays a sound once without interrupting other sounds
             audioSource.PlayOneShot(jumpSound);
 
-            // Player is now in air
-            isGrounded = false;
+            // Reduce jumps remaining by 1
+            // First jump → jumpsRemaining goes from 2 to 1
+            // Second jump → jumpsRemaining goes from 1 to 0
+            // No more jumps until landing!
+            jumpsRemaining--;
         }
     }
 
     // OnCollisionEnter2D = runs when player touches another object
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // If player lands on Ground
+        // If player lands on Ground — reset jumps!
         if (collision.gameObject.name == "Ground")
         {
-            isGrounded = true;
+            // Reset jumps back to max
+            jumpsRemaining = maxJumps;
         }
 
         // If player hits Obstacle — trigger Game Over!
         if (collision.gameObject.name.Contains("Obstacle"))
         {
-            // Play game over sound before game stops
+            // Play game over sound
             audioSource.PlayOneShot(gameOverSound);
 
             // Trigger Game Over
