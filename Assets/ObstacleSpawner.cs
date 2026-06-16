@@ -27,7 +27,6 @@ public class ObstacleSpawner : MonoBehaviour
             timer = 0f;
 
             // Reduce spawnTime slowly — game gets harder!
-            // Mathf.Max = never goes below 0.8f seconds
             spawnTime = Mathf.Max(0.8f, spawnTime - 0.1f);
         }
     }
@@ -35,30 +34,50 @@ public class ObstacleSpawner : MonoBehaviour
     // SpawnObstacle() = creates a new obstacle in the scene
     void SpawnObstacle()
     {
-        Vector3 spawnPosition = new Vector3(10f, -3f, 0f);
+        // Random.Range = picks random number between 1 and 4
+        // 1 = small, 2 = medium, 3 = tall, 4 = double obstacle
+        int obstacleType = Random.Range(1, 5);
+
+        if (obstacleType == 1)
+        {
+            // Type 1 — Small obstacle
+            SpawnSingle(10f, -3.5f, 1f, 0.5f);
+        }
+        else if (obstacleType == 2)
+        {
+            // Type 2 — Medium obstacle
+            SpawnSingle(10f, -3f, 1f, 1f);
+        }
+        else if (obstacleType == 3)
+        {
+            // Type 3 — Tall obstacle — need double jump!
+            SpawnSingle(10f, -2.5f, 1f, 2f);
+        }
+        else if (obstacleType == 4)
+        {
+            // Type 4 — Two obstacles close together — tricky!
+            SpawnSingle(10f, -3f, 1f, 1f);
+            SpawnSingle(12f, -3f, 1f, 1f);
+        }
+    }
+
+    // SpawnSingle() = spawns one obstacle with given position and size
+    // posX = horizontal position
+    // posY = vertical position
+    // scaleX = width of obstacle
+    // scaleY = height of obstacle
+    void SpawnSingle(float posX, float posY, float scaleX, float scaleY)
+    {
+        // Create obstacle at given position
+        Vector3 spawnPosition = new Vector3(posX, posY, 0f);
         GameObject obstacle = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
 
-        // Set red color immediately after spawning
+        // Set size
+        obstacle.transform.localScale = new Vector3(scaleX, scaleY, 1f);
+
+        // Set red color
+        // GetComponentInChildren = searches child objects too
         SpriteRenderer sr = obstacle.GetComponentInChildren<SpriteRenderer>();
-
         sr.color = new Color(1f, 0.2f, 0.2f, 1f);
-
-        int sizeType = Random.Range(1, 4);
-
-        if (sizeType == 1)
-        {
-            obstacle.transform.localScale = new Vector3(1f, 0.5f, 1f);
-            obstacle.transform.position = new Vector3(10f, -3.5f, 0f);
-        }
-        else if (sizeType == 2)
-        {
-            obstacle.transform.localScale = new Vector3(1f, 1f, 1f);
-            obstacle.transform.position = new Vector3(10f, -3f, 0f);
-        }
-        else if (sizeType == 3)
-        {
-            obstacle.transform.localScale = new Vector3(1f, 2f, 1f);
-            obstacle.transform.position = new Vector3(10f, -2.5f, 0f);
-        }
     }
 }

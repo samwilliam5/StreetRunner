@@ -7,11 +7,9 @@ public class PlayerJump : MonoBehaviour
     public float jumpForce = 10f;
 
     // maxJumps = how many times player can jump
-    // 2 = double jump allowed!
     private int maxJumps = 2;
 
     // jumpsRemaining = how many jumps player has left
-    // starts at 2, goes down each jump, resets when landing
     private int jumpsRemaining = 2;
 
     // rb = stores the Rigidbody2D component of the player
@@ -39,8 +37,27 @@ public class PlayerJump : MonoBehaviour
     // Update() = runs every frame
     void Update()
     {
-        // If Space bar pressed AND player has jumps remaining
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && jumpsRemaining > 0)
+        // Check Space bar press on PC
+        bool jumpPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
+
+        // Check screen tap on Mobile
+        // Input.touchCount = number of fingers touching screen
+        // TouchPhase.Began = finger just touched screen
+        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+        {
+            // Screen was tapped!
+            jumpPressed = true;
+        }
+
+        // Also check mouse click — useful for testing on PC
+        // Input.GetMouseButtonDown(0) = left mouse button clicked
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            jumpPressed = true;
+        }
+
+        // If jump pressed AND player has jumps remaining
+        if (jumpPressed && jumpsRemaining > 0)
         {
             // Push player upward
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
@@ -49,9 +66,6 @@ public class PlayerJump : MonoBehaviour
             audioSource.PlayOneShot(jumpSound);
 
             // Reduce jumps remaining by 1
-            // First jump → jumpsRemaining goes from 2 to 1
-            // Second jump → jumpsRemaining goes from 1 to 0
-            // No more jumps until landing!
             jumpsRemaining--;
         }
     }
@@ -62,7 +76,6 @@ public class PlayerJump : MonoBehaviour
         // If player lands on Ground — reset jumps!
         if (collision.gameObject.name == "Ground")
         {
-            // Reset jumps back to max
             jumpsRemaining = maxJumps;
         }
 
