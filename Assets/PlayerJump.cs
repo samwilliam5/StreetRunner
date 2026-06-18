@@ -24,48 +24,36 @@ public class PlayerJump : MonoBehaviour
     // gameOverSound = the game over sound effect file
     public AudioClip gameOverSound;
 
+    // dustEffect = the dust particle prefab
+    // spawns when player lands on ground
+    public GameObject dustEffect;
+
     // Start() = runs once when game starts
     void Start()
     {
-        // Get the Rigidbody2D component
         rb = GetComponent<Rigidbody2D>();
-
-        // Get the AudioSource component
         audioSource = GetComponent<AudioSource>();
     }
 
     // Update() = runs every frame
     void Update()
     {
-        // Check Space bar press on PC
         bool jumpPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
 
-        // Check screen tap on Mobile
-        // Input.touchCount = number of fingers touching screen
-        // TouchPhase.Began = finger just touched screen
         if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
         {
-            // Screen was tapped!
             jumpPressed = true;
         }
 
-        // Also check mouse click — useful for testing on PC
-        // Input.GetMouseButtonDown(0) = left mouse button clicked
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             jumpPressed = true;
         }
 
-        // If jump pressed AND player has jumps remaining
         if (jumpPressed && jumpsRemaining > 0)
         {
-            // Push player upward
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-
-            // Play jump sound
             audioSource.PlayOneShot(jumpSound);
-
-            // Reduce jumps remaining by 1
             jumpsRemaining--;
         }
     }
@@ -73,19 +61,27 @@ public class PlayerJump : MonoBehaviour
     // OnCollisionEnter2D = runs when player touches another object
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // If player lands on Ground — reset jumps!
         if (collision.gameObject.name == "Ground")
         {
+            // Reset jumps
             jumpsRemaining = maxJumps;
+
+            // Spawn dust effect at player feet!
+            // transform.position = player current position
+            // Quaternion.identity = no rotation
+            if (dustEffect != null)
+            {
+                Instantiate(
+                    dustEffect,
+                    new Vector3(transform.position.x, transform.position.y - 0.5f, 0f),
+                    Quaternion.identity
+                );
+            }
         }
 
-        // If player hits Obstacle — trigger Game Over!
         if (collision.gameObject.name.Contains("Obstacle"))
         {
-            // Play game over sound
             audioSource.PlayOneShot(gameOverSound);
-
-            // Trigger Game Over
             FindAnyObjectByType<GameManager>().GameOver();
         }
     }

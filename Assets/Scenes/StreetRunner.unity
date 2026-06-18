@@ -1633,6 +1633,7 @@ MonoBehaviour:
   jumpForce: 10
   jumpSound: {fileID: 8300000, guid: e8c1b06a74e31c7409a45f230043de95, type: 3}
   gameOverSound: {fileID: 8300000, guid: 38279275e4729ae49a1ee689553fbf29, type: 3}
+  dustEffect: {fileID: 4335532769856609937, guid: 47a66d3e60eb32144a60a93ca34960e0, type: 3}
 --- !u!82 &1117479311
 AudioSource:
   m_ObjectHideFlags: 0
