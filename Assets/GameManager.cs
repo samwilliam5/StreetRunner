@@ -29,11 +29,11 @@ public class GameManager : MonoBehaviour
     // Start() = runs once when game starts
     void Start()
     {
-        // Load saved high score from computer
         highScore = PlayerPrefs.GetFloat("HighScore", 0f);
-
-        // Show high score on screen when game starts
         highScoreText.text = "Best: " + (int)highScore;
+
+        // Force play background music
+        GetComponent<AudioSource>().Play();
     }
 
     // Update() = runs every frame
